@@ -1,3 +1,7 @@
-mod player_component;
+mod celestial_body;
+mod player;
+mod settings;
 
-pub use player_component::Player;
+pub use celestial_body::*;
+pub use player::*;
+pub use settings::*;

@@ -1,5 +1,6 @@
 use bevy::prelude::{App, Plugin, Startup};
 
+mod generate;
 mod systems;
 
 pub struct SpacePlugin;
