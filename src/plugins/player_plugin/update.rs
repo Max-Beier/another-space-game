@@ -8,26 +8,26 @@ use bevy::{
     window::{CursorGrabMode, Window},
 };
 
-use crate::components::{InputSettings, PName};
+use crate::{
+    components::{PMass, PName},
+    resources::{InputSettings, Player},
+};
 
 use super::utils::change_cursor;
-
-// CONSTANTS
-const PLAYER_SPEED: f32 = 1000.0;
 
 pub fn update(
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
+    input_settings: Res<InputSettings>,
+    player: Res<Player>,
     mut mouse_event: EventReader<MouseMotion>,
     mut window_q: Query<&mut Window>,
-    mut player_q: Query<&mut Transform, (With<PName>, Without<Camera3d>)>,
+    mut player_q: Query<&mut Transform, (With<PName>, With<PMass>, Without<Camera3d>)>,
     mut camera_q: Query<&mut Transform, (With<Camera3d>, Without<PName>)>,
-    input_settings_q: Query<&InputSettings>,
 ) {
     let mut window: bevy::prelude::Mut<'_, Window> = window_q.single_mut();
     let mut player_tranform = player_q.single_mut();
     let mut camera_transform = camera_q.single_mut();
-    let input_settings = input_settings_q.single();
     let mut direction: Vec3 = Vec3::ZERO;
 
     if input.pressed(KeyCode::W) {
@@ -74,6 +74,6 @@ pub fn update(
         }
     };
 
-    let movement = direction.normalize_or_zero() * PLAYER_SPEED * time.delta_seconds();
+    let movement = direction.normalize_or_zero() * player.speed * time.delta_seconds();
     player_tranform.translation += movement;
 }

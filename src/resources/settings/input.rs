@@ -1,6 +1,6 @@
-use bevy::prelude::Component;
+use bevy::prelude::Resource;
 
-#[derive(Component)]
+#[derive(Resource)]
 pub struct InputSettings {
     pub mouse_sensitivity: f32,
 }

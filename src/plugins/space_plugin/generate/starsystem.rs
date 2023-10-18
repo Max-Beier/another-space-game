@@ -1,16 +1,13 @@
-use std::ops::Range;
-
-use bevy::prelude::{Assets, Commands, Mesh, ResMut, StandardMaterial, Vec3};
+use bevy::prelude::{Assets, Commands, Mesh, Res, ResMut, StandardMaterial, Vec3};
 use rand::{rngs::StdRng, Rng, SeedableRng};
+
+use crate::resources::Space;
 
 use super::{planet::generate_planet, star::generate_star};
 
-// CONST
-const STARSYSTEN_PLANETS: Range<usize> = 1..10;
-const STARSYSTEM_PLANETS_DISTANCE: Range<f32> = 50000.0..100000.0;
-
 pub fn generate_star_system(
     mut commands: Commands,
+    space: Res<Space>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
     position: Vec3,
@@ -19,23 +16,27 @@ pub fn generate_star_system(
     let mut rng: StdRng = StdRng::seed_from_u64(starsystem_seed as u64);
     let center_mass = generate_star(
         &mut commands,
+        &space.clone(),
         &mut meshes,
         &mut materials,
         &mut rng,
         position,
     );
 
-    for i in STARSYSTEN_PLANETS.start..rng.gen_range(STARSYSTEN_PLANETS) {
-        let x: f32 = rng.gen_range(STARSYSTEM_PLANETS_DISTANCE) * i as f32;
-        let y: f32 = rng.gen_range(STARSYSTEM_PLANETS_DISTANCE) * i as f32;
-        let z: f32 = rng.gen_range(STARSYSTEM_PLANETS_DISTANCE) * i as f32;
+    for _ in space.planets_count.start.clone()..rng.gen_range(space.planets_count.clone()) {
+        let planet_position = Vec3::new(
+            rng.gen_range(space.planets_distance.clone()),
+            rng.gen_range(space.planets_distance.clone()),
+            rng.gen_range(space.planets_distance.clone()),
+        );
 
         generate_planet(
             &mut commands,
+            &space,
             &mut meshes,
             &mut materials,
             &mut rng,
-            Vec3::new(x, y, z),
+            planet_position,
             (position, center_mass),
         );
     }

@@ -1,23 +1,19 @@
-use std::ops::Range;
-
 use bevy::prelude::{
-    shape, Assets, Color, Commands, Mesh, PbrBundle, ResMut, StandardMaterial, Vec3,
+    shape, Assets, Color, Commands, Mesh, PbrBundle, Res, ResMut, StandardMaterial, Vec3,
 };
 use rand::{rngs::StdRng, Rng};
 
 use crate::{
     bundles::CBBundle,
     components::{CBClass, CBInitialVelocity, CBName, CBRadius, CBSpin, CBSurfaceGravity},
+    resources::Space,
 };
 
 use super::celestial_body::generate_celestial_body;
 
-// CONST
-const PLANET_RADIUS: Range<f32> = 100.0..4000.0;
-const PLANET_SURFACE_GRAVITY: Range<f32> = 4.0..20.0;
-
 pub fn generate_planet(
     commands: &mut Commands,
+    space: &Res<Space>,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
     rng: &mut StdRng,
@@ -27,20 +23,20 @@ pub fn generate_planet(
     let cb = CBBundle {
         name: CBName("Planet".to_string()),
         class: CBClass::Planet,
-        radius: CBRadius(rng.gen_range(PLANET_RADIUS)),
-        surface_gravity: CBSurfaceGravity(rng.gen_range(PLANET_SURFACE_GRAVITY)),
+        radius: CBRadius(rng.gen_range(space.planet_radius.clone())),
+        surface_gravity: CBSurfaceGravity(rng.gen_range(space.planet_surface_gravity.clone())),
         initial_velocity: CBInitialVelocity(Vec3::new(100.0, 0.0, 0.0)),
         spin: CBSpin(10.0),
     };
 
+    let base_mesh = Mesh::try_from(shape::Icosphere {
+        radius: cb.radius.0,
+        subdivisions: 10,
+    })
+    .unwrap();
+
     let mesh: PbrBundle = PbrBundle {
-        mesh: meshes.add(
-            Mesh::try_from(shape::Icosphere {
-                radius: cb.radius.0,
-                subdivisions: 10,
-            })
-            .unwrap(),
-        ),
+        mesh: meshes.add(base_mesh),
         material: materials.add(StandardMaterial {
             unlit: true,
             base_color: Color::GREEN,
