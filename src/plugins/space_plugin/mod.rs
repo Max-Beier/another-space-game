@@ -1,12 +1,12 @@
 use bevy::prelude::{App, Plugin, Startup};
 
 mod generate;
-mod systems;
+mod startup;
 
 pub struct SpacePlugin;
 
 impl Plugin for SpacePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, systems::startup);
+        app.add_systems(Startup, startup::startup);
     }
 }

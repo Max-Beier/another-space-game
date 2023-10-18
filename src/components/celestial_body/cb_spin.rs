@@ -1,10 +1,10 @@
 use bevy::prelude::Component;
 
 #[derive(Component)]
-pub struct CBMass(pub f32);
+pub struct CBSpin(pub f32);
 
-impl Default for CBMass {
+impl Default for CBSpin {
     fn default() -> Self {
-        Self(5.0)
+        Self(10.0)
     }
 }

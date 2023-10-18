@@ -3,6 +3,7 @@ use bevy::{
     prelude::{Assets, Commands, Mesh, ResMut, StandardMaterial, Transform},
     scene::SceneBundle,
 };
+use rand::rngs::StdRng;
 
 pub fn startup(
     mut commands: Commands,

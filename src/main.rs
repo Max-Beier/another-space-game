@@ -4,6 +4,7 @@ use bevy::{
     window::{Window, WindowPlugin},
     DefaultPlugins,
 };
+use bevy_rapier3d::prelude::{NoUserData, RapierPhysicsPlugin};
 use bundles::SettingsBundle;
 
 mod bundles;
@@ -21,6 +22,7 @@ fn main() {
                 }),
                 ..Default::default()
             }),
+            RapierPhysicsPlugin::<NoUserData>::default(),
             plugins::PlayerPlugin,
             plugins::SpacePlugin,
         ))
