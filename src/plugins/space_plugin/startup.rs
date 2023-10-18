@@ -3,12 +3,11 @@ use bevy::{
     prelude::{Assets, Commands, Mesh, ResMut, StandardMaterial, Transform},
     scene::SceneBundle,
 };
-use rand::rngs::StdRng;
 
 pub fn startup(
     mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
+    meshes: ResMut<Assets<Mesh>>,
+    materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands.spawn(SceneBundle::default());
     let player_transform = &Transform::default();
@@ -16,7 +15,7 @@ pub fn startup(
         commands,
         meshes,
         materials,
-        &player_transform.translation,
+        player_transform.translation,
         100,
         19,
     );

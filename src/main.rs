@@ -1,10 +1,9 @@
 use bevy::{
-    prelude::{App, Commands, PluginGroup, PreStartup, Query},
-    render::view::window,
+    prelude::{App, Commands, PluginGroup, PreStartup, ResMut, Vec3},
     window::{Window, WindowPlugin},
     DefaultPlugins,
 };
-use bevy_rapier3d::prelude::{NoUserData, RapierPhysicsPlugin};
+use bevy_rapier3d::prelude::{NoUserData, RapierConfiguration, RapierPhysicsPlugin};
 use bundles::SettingsBundle;
 
 mod bundles;
@@ -29,7 +28,9 @@ fn main() {
         .run();
 }
 
-fn preload(mut commands: Commands) {
+fn preload(mut commands: Commands, mut rapier_config: ResMut<RapierConfiguration>) {
     let settings = SettingsBundle::default();
     commands.spawn(settings);
+
+    rapier_config.gravity = Vec3::ZERO;
 }

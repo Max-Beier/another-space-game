@@ -1,6 +1,6 @@
 use bevy::prelude::Component;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub struct CBRadius(pub f32);
 
 impl Default for CBRadius {

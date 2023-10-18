@@ -1,13 +1,13 @@
 use bevy::prelude::Component;
 
-#[derive(Component)]
+#[derive(Component, Clone)]
 pub enum CBClass {
     Star,
     Planet,
-    Moon,
-    Asteroid,
-    Comet,
-    BlackHole,
+    _Moon,
+    _Asteroid,
+    _Comet,
+    _BlackHole,
     Other,
 }
 

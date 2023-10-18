@@ -1,12 +1,14 @@
 use bevy::prelude::Bundle;
 
-use crate::components::{CBClass, CBName, CBRadius, CBSpin};
+use crate::components::{CBClass, CBInitialVelocity, CBName, CBRadius, CBSpin, CBSurfaceGravity};
 
-#[derive(Bundle)]
+#[derive(Bundle, Clone)]
 pub struct CBBundle {
     pub name: CBName,
     pub class: CBClass,
     pub radius: CBRadius,
+    pub surface_gravity: CBSurfaceGravity,
+    pub initial_velocity: CBInitialVelocity,
     pub spin: CBSpin,
 }
 
@@ -16,6 +18,8 @@ impl Default for CBBundle {
             name: Default::default(),
             class: Default::default(),
             radius: Default::default(),
+            surface_gravity: Default::default(),
+            initial_velocity: Default::default(),
             spin: Default::default(),
         }
     }

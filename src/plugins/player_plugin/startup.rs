@@ -1,9 +1,6 @@
 use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
-    prelude::{
-        Assets, BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Mesh, Query, ResMut,
-        StandardMaterial,
-    },
+    prelude::{BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Query},
     transform::TransformBundle,
     window::Window,
 };
@@ -12,12 +9,7 @@ use crate::bundles::PlayerBundle;
 
 use super::utils::change_cursor;
 
-pub fn startup(
-    mut commands: Commands,
-    mut window_q: Query<&mut Window>,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
     let mut window = window_q.single_mut();
 
     let camera_e = commands
@@ -32,7 +24,9 @@ pub fn startup(
 
     commands
         .spawn(PlayerBundle::default())
-        .insert(TransformBundle::default())
+        .insert(TransformBundle {
+            ..Default::default()
+        })
         .add_child(camera_e);
 
     change_cursor(&mut window);

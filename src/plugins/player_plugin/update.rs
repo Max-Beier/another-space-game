@@ -13,7 +13,7 @@ use crate::components::{InputSettings, PName};
 use super::utils::change_cursor;
 
 // CONSTANTS
-const PLAYER_SPEED: f32 = 10.0;
+const PLAYER_SPEED: f32 = 1000.0;
 
 pub fn update(
     input: Res<Input<KeyCode>>,
@@ -44,6 +44,14 @@ pub fn update(
 
     if input.pressed(KeyCode::D) {
         direction += player_tranform.right();
+    }
+
+    if input.pressed(KeyCode::Space) {
+        direction += player_tranform.up();
+    }
+
+    if input.pressed(KeyCode::ControlLeft) {
+        direction += player_tranform.down();
     }
 
     if input.just_pressed(KeyCode::Escape) {
