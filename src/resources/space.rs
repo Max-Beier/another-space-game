@@ -4,6 +4,8 @@ use bevy::prelude::Resource;
 
 #[derive(Resource, Clone)]
 pub struct Space {
+    // Celestial Body
+    pub subdivisions: usize,
     // Starsystem
     pub planets_count: Range<usize>,
     pub planets_distance: Range<f32>,
@@ -18,6 +20,8 @@ pub struct Space {
 impl Default for Space {
     fn default() -> Self {
         Self {
+            // Celestial Body
+            subdivisions: 10,
             // Starsystem
             planets_count: 1..10,
             planets_distance: 50000.0..100000.0,

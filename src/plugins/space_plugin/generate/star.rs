@@ -33,7 +33,7 @@ pub fn generate_star(
         mesh: meshes.add(
             Mesh::try_from(shape::Icosphere {
                 radius: cb.radius.0,
-                subdivisions: 10,
+                subdivisions: space.subdivisions.clone(),
             })
             .unwrap(),
         ),

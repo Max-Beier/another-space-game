@@ -25,13 +25,13 @@ pub fn generate_planet(
         class: CBClass::Planet,
         radius: CBRadius(rng.gen_range(space.planet_radius.clone())),
         surface_gravity: CBSurfaceGravity(rng.gen_range(space.planet_surface_gravity.clone())),
-        initial_velocity: CBInitialVelocity(Vec3::new(100.0, 0.0, 0.0)),
-        spin: CBSpin(10.0),
+        initial_velocity: CBInitialVelocity::default(),
+        spin: CBSpin::default(),
     };
 
     let base_mesh = Mesh::try_from(shape::Icosphere {
         radius: cb.radius.0,
-        subdivisions: 10,
+        subdivisions: space.subdivisions.clone(),
     })
     .unwrap();
 

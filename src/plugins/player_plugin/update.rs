@@ -58,7 +58,7 @@ pub fn update(
     }
 
     if input.pressed(KeyCode::Space) && player_controller_putput.grounded {
-        direction += player_transform.up();
+        direction += player_transform.up() * player.jump_velocity;
     }
 
     if window.cursor.grab_mode == CursorGrabMode::Locked {
