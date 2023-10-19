@@ -23,7 +23,7 @@ impl Default for Space {
             planets_distance: 50000.0..100000.0,
             // Star
             star_radius: 5000.0..10000.0,
-            star_surface_gravity: 30.0..50.0,
+            star_surface_gravity: 50.0..80.0,
             // Planet
             planet_radius: 100.0..4000.0,
             planet_surface_gravity: 4.0..20.0,

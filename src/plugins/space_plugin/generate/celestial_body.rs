@@ -2,9 +2,7 @@ use bevy::{
     prelude::{Commands, PbrBundle, Transform, Vec3},
     transform::TransformBundle,
 };
-use bevy_rapier3d::prelude::{
-    Ccd, Collider, ColliderMassProperties, GravityScale, RigidBody, Sleeping, Velocity,
-};
+use bevy_rapier3d::prelude::{Collider, ColliderMassProperties, RigidBody, Sleeping, Velocity};
 
 use crate::bundles::CBBundle;
 
@@ -32,8 +30,6 @@ pub fn generate_celestial_body(
     commands
         .spawn(RigidBody::Dynamic)
         .insert(Sleeping::disabled())
-        .insert(Ccd::enabled())
-        .insert(GravityScale(1.0))
         .insert(Collider::ball(cb.radius.0))
         .insert(ColliderMassProperties::Mass(mass))
         .insert(Velocity::linear(cb.initial_velocity.0))

@@ -5,7 +5,8 @@ use bevy::{
     window::Window,
 };
 use bevy_rapier3d::prelude::{
-    Ccd, Collider, ColliderMassProperties, GravityScale, RigidBody, Sleeping, Velocity,
+    CharacterLength, Collider, ColliderMassProperties, KinematicCharacterController, RigidBody,
+    Sleeping, Velocity,
 };
 
 use crate::bundles::PlayerBundle;
@@ -26,15 +27,17 @@ pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
         .id();
 
     commands
-        .spawn(RigidBody::Dynamic)
+        .spawn(RigidBody::KinematicPositionBased)
         .insert(Sleeping::disabled())
-        .insert(Ccd::enabled())
-        .insert(GravityScale(1.0))
-        .insert(Collider::capsule(Vec3::ZERO, Vec3::new(0.0, 2.0, 0.0), 1.0))
+        .insert(Collider::ball(0.5))
         .insert(ColliderMassProperties::Mass(PlayerBundle::default().mass.0))
-        .insert(Velocity::linear(Vec3::ZERO))
+        .insert(Velocity::default())
+        .insert(KinematicCharacterController {
+            snap_to_ground: Some(CharacterLength::Absolute(0.5)),
+            ..Default::default()
+        })
         .insert(TransformBundle {
-            local: Transform::from_translation(Vec3::new(0.0, 10000.0, 0.0)),
+            local: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
             ..Default::default()
         })
         .insert(PlayerBundle::default())
