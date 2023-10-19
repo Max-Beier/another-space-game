@@ -7,7 +7,7 @@ use bevy::{
     time::Time,
     window::{CursorGrabMode, Window},
 };
-use bevy_rapier3d::prelude::KinematicCharacterController;
+use bevy_rapier3d::prelude::KinematicCharacterControllerOutput;
 
 use crate::{
     components::{PMass, PName},
@@ -23,11 +23,17 @@ pub fn update(
     player: Res<Player>,
     mut mouse_event: EventReader<MouseMotion>,
     mut window_q: Query<&mut Window>,
-    mut player_q: Query<&mut Transform, (With<PName>, With<PMass>, Without<Camera3d>)>,
-    mut camera_q: Query<&mut Transform, (With<Camera3d>, Without<KinematicCharacterController>)>,
+    mut player_q: Query<
+        (&mut Transform, &KinematicCharacterControllerOutput),
+        (With<PName>, With<PMass>, Without<Camera3d>),
+    >,
+    mut camera_q: Query<
+        &mut Transform,
+        (With<Camera3d>, Without<KinematicCharacterControllerOutput>),
+    >,
 ) {
     let mut window: bevy::prelude::Mut<'_, Window> = window_q.single_mut();
-    let mut player_transform = player_q.single_mut();
+    let (mut player_transform, player_controller_putput) = player_q.single_mut();
     let mut camera_transform = camera_q.single_mut();
     let mut direction: Vec3 = Vec3::ZERO;
 
@@ -51,11 +57,7 @@ pub fn update(
         direction += player_transform.right();
     }
 
-    if input.pressed(KeyCode::ControlLeft) {
-        direction += player_transform.down();
-    }
-
-    if input.pressed(KeyCode::Space) {
+    if input.pressed(KeyCode::Space) && player_controller_putput.grounded {
         direction += player_transform.up();
     }
 

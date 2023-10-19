@@ -5,8 +5,8 @@ use bevy::{
     window::Window,
 };
 use bevy_rapier3d::prelude::{
-    CharacterLength, Collider, ColliderMassProperties, KinematicCharacterController, RigidBody,
-    Sleeping, Velocity,
+    CharacterLength, Collider, KinematicCharacterController, KinematicCharacterControllerOutput,
+    RigidBody, Sleeping, Velocity,
 };
 
 use crate::bundles::PlayerBundle;
@@ -30,12 +30,13 @@ pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
         .spawn(RigidBody::KinematicPositionBased)
         .insert(Sleeping::disabled())
         .insert(Collider::ball(0.5))
-        .insert(ColliderMassProperties::Mass(PlayerBundle::default().mass.0))
         .insert(Velocity::default())
         .insert(KinematicCharacterController {
             snap_to_ground: Some(CharacterLength::Absolute(0.5)),
+            custom_mass: Some(PlayerBundle::default().mass.0),
             ..Default::default()
         })
+        .insert(KinematicCharacterControllerOutput::default())
         .insert(TransformBundle {
             local: Transform::from_translation(Vec3::new(0.0, 0.0, 0.0)),
             ..Default::default()
