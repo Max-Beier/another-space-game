@@ -29,7 +29,7 @@ pub fn generate_star(
         spin: CBSpin(10.0),
     };
 
-    let mesh: PbrBundle = PbrBundle {
+    let star_mesh: PbrBundle = PbrBundle {
         mesh: meshes.add(
             Mesh::try_from(shape::Icosphere {
                 radius: cb.radius.0,
@@ -45,7 +45,7 @@ pub fn generate_star(
         ..Default::default()
     };
 
-    generate_celestial_body(commands, cb.clone(), mesh, position, None);
+    generate_celestial_body(commands, cb.clone(), star_mesh, position, None);
 
     cb.surface_gravity.0 * cb.radius.0 * cb.radius.0 / 6.674e-11
 }

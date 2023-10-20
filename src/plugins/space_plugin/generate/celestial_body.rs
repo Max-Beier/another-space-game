@@ -29,7 +29,7 @@ pub fn generate_celestial_body(
     }
 
     commands
-        .spawn(RigidBody::KinematicVelocityBased)
+        .spawn(RigidBody::Dynamic)
         .insert(Sleeping::disabled())
         .insert(Collider::ball(cb.radius.0))
         .insert(ColliderMassProperties::Mass(mass))

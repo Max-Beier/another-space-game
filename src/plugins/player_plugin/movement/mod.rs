@@ -40,6 +40,7 @@ pub fn update(
 
     for _ in collision_events.iter() {
         player_controller.is_colliding = !player_controller.is_colliding;
+        println!("On Ground: {}", player_controller.is_colliding);
     }
 
     if window.cursor.grab_mode == CursorGrabMode::Locked {

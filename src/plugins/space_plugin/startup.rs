@@ -2,7 +2,7 @@ use crate::resources::Space;
 
 use super::generate::generate_space;
 use bevy::{
-    prelude::{Assets, Commands, Mesh, Res, ResMut, StandardMaterial, Transform},
+    prelude::{Assets, Commands, Mesh, Res, ResMut, StandardMaterial},
     scene::SceneBundle,
 };
 
@@ -13,14 +13,5 @@ pub fn startup(
     materials: ResMut<Assets<StandardMaterial>>,
 ) {
     commands.spawn(SceneBundle::default());
-    let player_transform = &Transform::default();
-    generate_space(
-        commands,
-        space,
-        meshes,
-        materials,
-        player_transform.translation,
-        100,
-        19,
-    );
+    generate_space(commands, space, meshes, materials, 100, 19);
 }

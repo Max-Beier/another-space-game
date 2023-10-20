@@ -1,4 +1,4 @@
-use bevy::prelude::{App, Plugin, Startup, Update};
+use bevy::prelude::{App, Plugin, PreStartup, Update};
 
 mod generate;
 mod startup;
@@ -8,7 +8,7 @@ pub struct SpacePlugin;
 
 impl Plugin for SpacePlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Startup, startup::startup);
+        app.add_systems(PreStartup, startup::startup);
         app.add_systems(Update, update::update);
     }
 }

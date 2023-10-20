@@ -44,13 +44,14 @@ pub fn update(
 
             // Only one body can affect the player at a time
             if force.length_squared() > c_force.length_squared() {
-                let gravity_up = -force.normalize_or_zero();
+                let gravity_up = -force_dir.normalize_or_zero();
                 let target_rotation = Quat::from_rotation_arc(p.0.up(), gravity_up) * p.0.rotation;
 
                 if !p.3.is_colliding {
                     p.2.linvel += force * time.delta_seconds();
                 }
-                p.0.rotation = Quat::slerp(p.0.rotation, target_rotation, time.delta_seconds());
+                p.0.rotation =
+                    Quat::slerp(p.0.rotation, target_rotation, time.delta_seconds() * 10.0);
 
                 c_force = force;
             }

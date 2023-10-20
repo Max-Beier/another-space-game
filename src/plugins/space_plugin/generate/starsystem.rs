@@ -10,8 +10,8 @@ pub fn generate_star_system(
     space: Res<Space>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
-    position: Vec3,
     starsystem_seed: u32,
+    center_position: Vec3,
 ) {
     let mut rng: StdRng = StdRng::seed_from_u64(starsystem_seed as u64);
     let center_mass = generate_star(
@@ -20,7 +20,7 @@ pub fn generate_star_system(
         &mut meshes,
         &mut materials,
         &mut rng,
-        position,
+        center_position,
     );
 
     for _ in space.planets_count.start.clone()..rng.gen_range(space.planets_count.clone()) {
@@ -37,7 +37,7 @@ pub fn generate_star_system(
             &mut materials,
             &mut rng,
             planet_position,
-            (position, center_mass),
+            (center_position, center_mass),
         );
     }
 }

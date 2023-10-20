@@ -35,7 +35,7 @@ pub fn generate_planet(
     })
     .unwrap();
 
-    let mesh: PbrBundle = PbrBundle {
+    let planet_mesh: PbrBundle = PbrBundle {
         mesh: meshes.add(base_mesh),
         material: materials.add(StandardMaterial {
             unlit: true,
@@ -45,5 +45,5 @@ pub fn generate_planet(
         ..Default::default()
     };
 
-    generate_celestial_body(commands, cb, mesh, position, Some(center_mass));
+    generate_celestial_body(commands, cb, planet_mesh, position, Some(center_mass));
 }

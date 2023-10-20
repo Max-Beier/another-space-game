@@ -9,21 +9,31 @@ use bevy_rapier3d::prelude::{
     Sensor, Sleeping, Velocity,
 };
 
-use crate::components::PlayerController;
+use crate::components::{CBClass, CBRadius, PlayerController};
 
 use super::utils::change_cursor;
 
-pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
+pub fn startup(
+    mut commands: Commands,
+    mut window_q: Query<&mut Window>,
+    cbs: Query<(&CBClass, &Transform, &CBRadius)>,
+) {
     let mut window = window_q.single_mut();
     change_cursor(&mut window);
 
     let player_controller = PlayerController::default();
-    let spawn_point = player_controller.spawn_point;
+    let player_spawn_positions: Vec<(Vec3, f32)> = cbs
+        .iter()
+        .filter(|cb| matches!(cb.0, CBClass::Planet))
+        .map(|cb| (cb.1.translation, cb.2 .0))
+        .collect();
+    let player_spawn_postion =
+        player_spawn_positions[0].0 + Vec3::new(player_spawn_positions[0].1, 0.0, 0.0) * 1.01;
 
     commands
         .spawn(RigidBody::Dynamic)
         .insert(Sleeping::disabled())
-        .insert(Collider::ball(1.0))
+        .insert(Collider::capsule_y(1.0, 0.5))
         .insert(ColliderMassProperties::Mass(player_controller.mass))
         .insert(Restitution {
             coefficient: 0.0,
@@ -32,7 +42,7 @@ pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
         .insert(Velocity::linear(Vec3::ZERO))
         .insert(player_controller)
         .insert(TransformBundle {
-            local: Transform::from_translation(spawn_point),
+            local: Transform::from_translation(player_spawn_postion),
             ..Default::default()
         })
         .with_children(|children| {
@@ -44,7 +54,7 @@ pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
                 ..Default::default()
             });
             children
-                .spawn(Collider::cylinder(1.0, 0.5))
+                .spawn(Collider::ball(0.1))
                 .insert(Sensor)
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(TransformBundle::from_transform(Transform::from_xyz(
