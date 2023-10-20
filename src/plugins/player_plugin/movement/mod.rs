@@ -7,36 +7,39 @@ use bevy::{
     time::Time,
     window::{CursorGrabMode, Window},
 };
-use bevy_rapier3d::prelude::Velocity;
+use bevy_rapier3d::prelude::{CollisionEvent, Velocity};
 
-use crate::{
-    components::{MovementState, PlayerController},
-    resources::InputSettings,
-};
+use crate::{components::PlayerController, resources::InputSettings};
 
 use super::utils::change_cursor;
 
-mod ground;
-mod space;
+mod foot;
 
 pub fn update(
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
     input_settings: Res<InputSettings>,
+    mut collision_events: EventReader<CollisionEvent>,
     mut mouse_event: EventReader<MouseMotion>,
     mut window_query: Query<&mut Window>,
     mut player_query: Query<
-        (&mut Transform, &mut Velocity, &PlayerController),
+        (&mut Transform, &mut Velocity, &mut PlayerController),
         With<PlayerController>,
     >,
     mut camera_query: Query<&mut Transform, (With<Camera3d>, Without<PlayerController>)>,
 ) {
     let mut window = window_query.single_mut();
-    let (mut player_transform, mut player_velocity, player_controller) = player_query.single_mut();
+    let (mut player_transform, mut player_velocity, mut player_controller) =
+        player_query.single_mut();
     let mut camera_transform = camera_query.single_mut();
 
+    // Pause
     if input.just_pressed(KeyCode::Escape) {
         change_cursor(&mut window);
+    }
+
+    for _ in collision_events.iter() {
+        player_controller.is_colliding = !player_controller.is_colliding;
     }
 
     if window.cursor.grab_mode == CursorGrabMode::Locked {
@@ -54,15 +57,13 @@ pub fn update(
             player_yar -= event.delta.x * input_settings.mouse_sensitivity * 0.001;
             player_transform.rotate_local_axis(Vec3::Y, player_yar);
         }
-    };
 
-    match player_controller.movement_state {
-        MovementState::GROUND => ground::active(
+        foot::active(
             &input,
             &time,
             &mut player_transform,
             &mut player_velocity,
             &player_controller,
-        ),
-    }
+        )
+    };
 }

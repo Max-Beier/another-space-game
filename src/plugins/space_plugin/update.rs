@@ -47,10 +47,11 @@ pub fn update(
                 let gravity_up = -force.normalize_or_zero();
                 let target_rotation = Quat::from_rotation_arc(p.0.up(), gravity_up) * p.0.rotation;
 
-                if !p.3.is_grounded {
+                if !p.3.is_colliding {
                     p.2.linvel += force * time.delta_seconds();
                 }
                 p.0.rotation = Quat::slerp(p.0.rotation, target_rotation, time.delta_seconds());
+
                 c_force = force;
             }
         }
