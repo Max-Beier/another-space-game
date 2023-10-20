@@ -1,4 +1,5 @@
 use bevy::{
+    pbr::wireframe::Wireframe,
     prelude::{Commands, PbrBundle, Transform, Vec3},
     transform::TransformBundle,
 };
@@ -28,13 +29,14 @@ pub fn generate_celestial_body(
     }
 
     commands
-        .spawn(RigidBody::Dynamic)
+        .spawn(RigidBody::KinematicVelocityBased)
         .insert(Sleeping::disabled())
         .insert(Collider::ball(cb.radius.0))
         .insert(ColliderMassProperties::Mass(mass))
         .insert(Velocity::linear(cb.initial_velocity.0))
         .insert(cb)
         .insert(mesh)
+        .insert(Wireframe)
         .insert(TransformBundle {
             local: Transform::from_translation(position),
             ..Default::default()

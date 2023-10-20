@@ -1,25 +1,21 @@
 use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
-    prelude::{
-        BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Query, Res, Transform, Vec3,
-    },
+    prelude::{BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Query, Transform, Vec3},
     transform::TransformBundle,
     window::Window,
 };
-use bevy_rapier3d::prelude::{
-    CharacterLength, Collider, ColliderMassProperties, KinematicCharacterController,
-    KinematicCharacterControllerOutput, RigidBody, Sleeping, Velocity,
-};
+use bevy_rapier3d::prelude::{Collider, ColliderMassProperties, RigidBody, Sleeping, Velocity};
 
-use crate::{bundles::PlayerBundle, resources::Player};
+use crate::components::PlayerController;
 
 use super::utils::change_cursor;
 
-pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>, player: Res<Player>) {
+pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>) {
     let mut window = window_q.single_mut();
     change_cursor(&mut window);
 
-    let player_bundle = PlayerBundle::default();
+    let player_controller = PlayerController::default();
+    let spawn_point = player_controller.spawn_point;
 
     let camera_e = commands
         .spawn(Camera3dBundle {
@@ -32,20 +28,14 @@ pub fn startup(mut commands: Commands, mut window_q: Query<&mut Window>, player:
         .id();
 
     commands
-        .spawn(RigidBody::KinematicVelocityBased)
+        .spawn(RigidBody::Dynamic)
         .insert(Sleeping::disabled())
-        .insert(Collider::ball(0.5))
-        .insert(ColliderMassProperties::Mass(player_bundle.mass.0))
+        .insert(Collider::capsule_y(2.0, 1.0))
+        .insert(ColliderMassProperties::Mass(player_controller.mass))
         .insert(Velocity::linear(Vec3::ZERO))
-        .insert(KinematicCharacterController {
-            snap_to_ground: Some(CharacterLength::Absolute(0.5)),
-            custom_mass: Some(player_bundle.mass.0),
-            ..Default::default()
-        })
-        .insert(KinematicCharacterControllerOutput::default())
-        .insert(player_bundle)
+        .insert(player_controller)
         .insert(TransformBundle {
-            local: Transform::from_translation(player.spawn_point),
+            local: Transform::from_translation(spawn_point),
             ..Default::default()
         })
         .add_child(camera_e);

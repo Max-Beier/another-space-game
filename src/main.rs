@@ -1,10 +1,11 @@
 use bevy::{
+    pbr::wireframe::WireframePlugin,
     prelude::{App, PluginGroup, PreStartup, ResMut, Vec3},
     window::{Window, WindowPlugin},
     DefaultPlugins,
 };
 use bevy_rapier3d::prelude::{NoUserData, RapierConfiguration, RapierPhysicsPlugin};
-use resources::{InputSettings, Player, Space};
+use resources::{InputSettings, Space};
 
 mod bundles;
 mod components;
@@ -15,7 +16,6 @@ fn main() {
     App::new()
         // Resources
         .insert_resource(InputSettings::default())
-        .insert_resource(Player::default())
         .insert_resource(Space::default())
         // Systems
         .add_systems(PreStartup, preload)
@@ -31,6 +31,7 @@ fn main() {
             RapierPhysicsPlugin::<NoUserData>::default(),
             plugins::PlayerPlugin,
             plugins::SpacePlugin,
+            WireframePlugin,
         ))
         .run();
 }

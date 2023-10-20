@@ -7,58 +7,36 @@ use bevy::{
     time::Time,
     window::{CursorGrabMode, Window},
 };
-use bevy_rapier3d::prelude::KinematicCharacterControllerOutput;
+use bevy_rapier3d::prelude::Velocity;
 
 use crate::{
-    components::{PMass, PName},
-    resources::{InputSettings, Player},
+    components::{MovementState, PlayerController},
+    resources::InputSettings,
 };
 
 use super::utils::change_cursor;
+
+mod ground;
+mod space;
 
 pub fn update(
     input: Res<Input<KeyCode>>,
     time: Res<Time>,
     input_settings: Res<InputSettings>,
-    player: Res<Player>,
     mut mouse_event: EventReader<MouseMotion>,
-    mut window_q: Query<&mut Window>,
-    mut player_q: Query<
-        (&mut Transform, &KinematicCharacterControllerOutput),
-        (With<PName>, With<PMass>, Without<Camera3d>),
+    mut window_query: Query<&mut Window>,
+    mut player_query: Query<
+        (&mut Transform, &mut Velocity, &PlayerController),
+        With<PlayerController>,
     >,
-    mut camera_q: Query<
-        &mut Transform,
-        (With<Camera3d>, Without<KinematicCharacterControllerOutput>),
-    >,
+    mut camera_query: Query<&mut Transform, (With<Camera3d>, Without<PlayerController>)>,
 ) {
-    let mut window: bevy::prelude::Mut<'_, Window> = window_q.single_mut();
-    let (mut player_transform, player_controller_putput) = player_q.single_mut();
-    let mut camera_transform = camera_q.single_mut();
-    let mut direction: Vec3 = Vec3::ZERO;
+    let mut window = window_query.single_mut();
+    let (mut player_transform, mut player_velocity, player_controller) = player_query.single_mut();
+    let mut camera_transform = camera_query.single_mut();
 
     if input.just_pressed(KeyCode::Escape) {
         change_cursor(&mut window);
-    }
-
-    if input.pressed(KeyCode::W) {
-        direction += player_transform.forward();
-    }
-
-    if input.pressed(KeyCode::S) {
-        direction -= player_transform.forward();
-    }
-
-    if input.pressed(KeyCode::A) {
-        direction -= player_transform.right();
-    }
-
-    if input.pressed(KeyCode::D) {
-        direction += player_transform.right();
-    }
-
-    if input.pressed(KeyCode::Space) && player_controller_putput.grounded {
-        direction += player_transform.up() * player.jump_velocity;
     }
 
     if window.cursor.grab_mode == CursorGrabMode::Locked {
@@ -78,6 +56,13 @@ pub fn update(
         }
     };
 
-    player_transform.translation +=
-        direction.normalize_or_zero() * player.speed * time.delta_seconds();
+    match player_controller.movement_state {
+        MovementState::GROUND => ground::active(
+            &input,
+            &time,
+            &mut player_transform,
+            &mut player_velocity,
+            &player_controller,
+        ),
+    }
 }
