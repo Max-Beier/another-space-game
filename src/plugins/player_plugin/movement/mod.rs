@@ -14,6 +14,7 @@ use crate::{components::PlayerController, resources::InputSettings};
 use super::utils::change_cursor;
 
 mod foot;
+mod spacesuit;
 
 pub fn update(
     input: Res<Input<KeyCode>>,
@@ -40,7 +41,6 @@ pub fn update(
 
     for _ in collision_events.iter() {
         player_controller.is_colliding = !player_controller.is_colliding;
-        println!("On Ground: {}", player_controller.is_colliding);
     }
 
     if window.cursor.grab_mode == CursorGrabMode::Locked {
@@ -68,6 +68,14 @@ pub fn update(
                 &mut player_velocity,
                 &player_controller,
             )
+        } else {
+            spacesuit::active(
+                &input,
+                &time,
+                &mut player_transform,
+                &mut player_velocity,
+                &player_controller,
+            );
         }
     };
 }

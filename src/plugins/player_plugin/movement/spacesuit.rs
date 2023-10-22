@@ -35,6 +35,11 @@ pub fn active(
 
     if input.pressed(KeyCode::Space) {
         player_velocity.linvel +=
-            player_transform.up() * player_controller.jump * time.delta_seconds();
+            player_transform.up() * player_controller.velocity * time.delta_seconds();
+    }
+
+    if input.pressed(KeyCode::ControlLeft) {
+        player_velocity.linvel +=
+            player_transform.down() * player_controller.velocity * time.delta_seconds();
     }
 }

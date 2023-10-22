@@ -1,6 +1,9 @@
 use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
-    prelude::{BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Query, Transform, Vec3},
+    prelude::{
+        BuildChildren, Camera3d, Camera3dBundle, Color, Commands, ComputedVisibility, Query,
+        Transform, Vec3,
+    },
     transform::TransformBundle,
     window::Window,
 };
@@ -30,7 +33,7 @@ pub fn startup(
         .collect();
 
     let player_spawn_postion =
-        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 1.0001;
+        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 5.0;
 
     commands
         .spawn(RigidBody::Dynamic)
@@ -41,11 +44,13 @@ pub fn startup(
         .insert(ColliderMassProperties::Mass(player_controller.mass))
         .insert(Velocity::linear(Vec3::ZERO))
         .insert(player_controller)
+        .insert(ComputedVisibility::default())
         .insert(TransformBundle {
             local: Transform::from_translation(player_spawn_postion),
             ..Default::default()
         })
         .with_children(|children| {
+            // Camera
             children.spawn(Camera3dBundle {
                 camera_3d: Camera3d {
                     clear_color: ClearColorConfig::Custom(Color::BLACK),
@@ -53,6 +58,8 @@ pub fn startup(
                 },
                 ..Default::default()
             });
+
+            // OnGround-Detection
             children
                 .spawn(Collider::ball(0.1))
                 .insert(Sensor)

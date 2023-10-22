@@ -38,8 +38,8 @@ pub fn generate_planet(
     let planet_mesh: PbrBundle = PbrBundle {
         mesh: meshes.add(base_mesh),
         material: materials.add(StandardMaterial {
-            unlit: true,
             base_color: Color::GREEN,
+
             ..Default::default()
         }),
         ..Default::default()

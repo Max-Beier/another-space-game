@@ -23,18 +23,18 @@ impl Default for Space {
     fn default() -> Self {
         Self {
             // Celestial Body
-            subdivisions: 10,
+            subdivisions: 20,
             // Starsystem
             planets_count: 1..10,
-            planets_distance: 50000.0..100000.0,
+            planets_distance: 1000000.0..10000000.0,
             // Star
-            star_radius: 5000.0..10000.0,
-            star_surface_gravity: 50.0..500.0,
+            star_radius: 5000.0..100000.0,
+            star_surface_gravity: 1000.0..5000.0,
             // Planet
-            planet_radius: 100.0..4000.0,
-            planet_surface_gravity: 2.0..50.0,
+            planet_radius: 1000.0..4000.0,
+            planet_surface_gravity: 5.0..1000.0,
             // Planet Orbit
-            planet_orbit_velocity: 0.000001..0.00005,
+            planet_orbit_velocity: 0.00000000001..0.0000000001,
         }
     }
 }

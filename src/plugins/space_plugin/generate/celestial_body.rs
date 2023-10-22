@@ -1,5 +1,4 @@
 use bevy::{
-    pbr::wireframe::Wireframe,
     prelude::{Commands, PbrBundle, Transform, Vec3},
     transform::TransformBundle,
 };
@@ -20,6 +19,5 @@ pub fn generate_celestial_body(
         .insert(TransformBundle {
             local: Transform::from_xyz(position.x, position.y, position.z),
             ..Default::default()
-        })
-        .insert(Wireframe);
+        });
 }
