@@ -14,7 +14,7 @@ use bevy::{
     },
 };
 
-use crate::components::AtmosphereSettings;
+use crate::components::{AtmosphereSettings, View};
 
 #[derive(Resource)]
 pub struct PostProcessPipeline {
@@ -49,6 +49,16 @@ impl FromWorld for PostProcessPipeline {
                 },
                 BindGroupLayoutEntry {
                     binding: 2,
+                    visibility: ShaderStages::FRAGMENT,
+                    ty: BindingType::Buffer {
+                        ty: bevy::render::render_resource::BufferBindingType::Uniform,
+                        has_dynamic_offset: false,
+                        min_binding_size: Some(View::min_size()),
+                    },
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 3,
                     visibility: ShaderStages::FRAGMENT,
                     ty: BindingType::Buffer {
                         ty: bevy::render::render_resource::BufferBindingType::Uniform,

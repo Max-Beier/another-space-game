@@ -4,20 +4,16 @@ use bevy::{
 };
 
 #[derive(Component, Clone, Copy, ExtractComponent, ShaderType)]
-pub struct AtmosphereSettings {
+pub struct View {
     pub origin: Vec3,
-    pub ground: f32,
-    pub thickness: f32,
-    pub light_dir: Vec3,
+    pub direction: Vec3,
 }
 
-impl Default for AtmosphereSettings {
+impl Default for View {
     fn default() -> Self {
         Self {
             origin: Vec3::ZERO,
-            ground: 6371008.767,
-            thickness: 16000.0,
-            light_dir: Vec3::ZERO,
+            direction: Vec3::ZERO,
         }
     }
 }

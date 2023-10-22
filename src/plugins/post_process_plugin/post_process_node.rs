@@ -13,7 +13,10 @@ use bevy::{
     },
 };
 
-use crate::{components::AtmosphereSettings, resources::PostProcessPipeline};
+use crate::{
+    components::{AtmosphereSettings, View},
+    resources::PostProcessPipeline,
+};
 
 #[derive(Default)]
 pub struct PostProcessNode;
@@ -36,6 +39,11 @@ impl ViewNode for PostProcessNode {
 
         let Some(pipeline) = pipeline_cache.get_render_pipeline(post_process_pipeline.pipeline_id)
         else {
+            return Ok(());
+        };
+
+        let view_uniform = world.resource::<ComponentUniforms<View>>();
+        let Some(view_uniform) = view_uniform.uniforms().binding() else {
             return Ok(());
         };
 
@@ -62,6 +70,10 @@ impl ViewNode for PostProcessNode {
                     },
                     BindGroupEntry {
                         binding: 2,
+                        resource: view_uniform.clone(),
+                    },
+                    BindGroupEntry {
+                        binding: 3,
                         resource: atmosphere_settings_binding.clone(),
                     },
                 ],

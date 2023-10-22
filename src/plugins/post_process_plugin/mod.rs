@@ -12,13 +12,18 @@ mod post_process_node;
 
 pub use post_process_node::*;
 
-use crate::{components::AtmosphereSettings, resources::PostProcessPipeline};
+use crate::{
+    components::{AtmosphereSettings, View},
+    resources::PostProcessPipeline,
+};
 
 pub struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_plugins((
+            ExtractComponentPlugin::<View>::default(),
+            UniformComponentPlugin::<View>::default(),
             ExtractComponentPlugin::<AtmosphereSettings>::default(),
             UniformComponentPlugin::<AtmosphereSettings>::default(),
         ));

@@ -9,7 +9,10 @@ use bevy::{
 };
 use bevy_rapier3d::prelude::{CollisionEvent, Velocity};
 
-use crate::{components::PlayerController, resources::InputSettings};
+use crate::{
+    components::{PlayerController, View},
+    resources::InputSettings,
+};
 
 use super::utils::change_cursor;
 
@@ -27,12 +30,15 @@ pub fn update(
         (&mut Transform, &mut Velocity, &mut PlayerController),
         With<PlayerController>,
     >,
-    mut camera_query: Query<&mut Transform, (With<Camera3d>, Without<PlayerController>)>,
+    mut camera_query: Query<
+        (&mut Transform, &mut View),
+        (With<Camera3d>, Without<PlayerController>),
+    >,
 ) {
     let mut window = window_query.single_mut();
     let (mut player_transform, mut player_velocity, mut player_controller) =
         player_query.single_mut();
-    let mut camera_transform = camera_query.single_mut();
+    let (mut camera_transform, mut view) = camera_query.single_mut();
 
     // Pause
     if input.just_pressed(KeyCode::Escape) {
@@ -58,6 +64,11 @@ pub fn update(
             player_yar -= event.delta.x * input_settings.mouse_sensitivity * 0.001;
             player_transform.rotate_local_axis(Vec3::Y, player_yar);
         }
+
+        // Update View
+        view.origin = camera_transform.translation;
+        view.direction = Vec3::from(camera_transform.rotation.to_euler(EulerRot::XYZ))
+            + Vec3::from(player_transform.rotation.to_euler(EulerRot::XYZ));
 
         if player_controller.is_colliding {
             player_velocity.linvel = Vec3::ZERO;

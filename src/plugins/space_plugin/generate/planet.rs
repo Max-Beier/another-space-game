@@ -4,7 +4,7 @@ use bevy::prelude::{
 use rand::{rngs::StdRng, Rng};
 
 use crate::{
-    components::{CBClass, CBOrbit, CelestialBody},
+    components::{AtmosphereSettings, CBClass, CBOrbit, CelestialBody},
     resources::Space,
 };
 
@@ -19,14 +19,23 @@ pub fn generate_planet(
     position: Vec3,
     orbit: CBOrbit,
 ) {
+    let radius = rng.gen_range(space.planet_radius.clone());
+
+    let atmosphere = AtmosphereSettings {
+        origin: position,
+        ground: radius,
+        thickness: 1000.0,
+        light_dir: Vec3::ZERO,
+    };
+
     let cb = CelestialBody {
         name: "Planet".to_string(),
         class: CBClass::Planet,
-        radius: rng.gen_range(space.planet_radius.clone()),
+        radius: radius,
         surface_gravity: rng.gen_range(space.planet_surface_gravity.clone()),
         spin_velocity: 0.0,
         orbit: Some(orbit),
-        atmosphere: None,
+        atmosphere: atmosphere,
     };
 
     let base_mesh = Mesh::try_from(shape::Icosphere {
