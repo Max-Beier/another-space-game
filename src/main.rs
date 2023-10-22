@@ -1,6 +1,8 @@
+use std::time::Duration;
+
 use bevy::{
-    pbr::wireframe::WireframePlugin,
-    prelude::{App, PluginGroup, PreStartup, ResMut, Vec3},
+    asset::ChangeWatcher,
+    prelude::{App, AssetPlugin, PluginGroup, PreStartup, ResMut, Vec3},
     window::{Window, WindowPlugin},
     DefaultPlugins,
 };
@@ -20,17 +22,22 @@ fn main() {
         .add_systems(PreStartup, preload)
         // Plugins
         .add_plugins((
-            DefaultPlugins.set(WindowPlugin {
-                primary_window: Some(Window {
-                    title: "Another Space Game...".to_string(),
+            DefaultPlugins
+                .set(WindowPlugin {
+                    primary_window: Some(Window {
+                        title: "Another Space Game...".to_string(),
+                        ..Default::default()
+                    }),
+                    ..Default::default()
+                })
+                .set(AssetPlugin {
+                    watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
                     ..Default::default()
                 }),
-                ..Default::default()
-            }),
             RapierPhysicsPlugin::<NoUserData>::default(),
             plugins::PlayerPlugin,
             plugins::SpacePlugin,
-            WireframePlugin,
+            plugins::PostProcessPlugin,
         ))
         .run();
 }

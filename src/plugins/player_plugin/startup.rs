@@ -11,7 +11,7 @@ use bevy_rapier3d::prelude::{
     ActiveEvents, Collider, ColliderMassProperties, RigidBody, Sensor, Velocity,
 };
 
-use crate::components::{CBClass, CelestialBody, PlayerController};
+use crate::components::{AtmosphereSettings, CBClass, CelestialBody, PlayerController};
 
 use super::utils::change_cursor;
 
@@ -33,7 +33,7 @@ pub fn startup(
         .collect();
 
     let player_spawn_postion =
-        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 5.0;
+        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 2.0;
 
     commands
         .spawn(RigidBody::Dynamic)
@@ -51,13 +51,16 @@ pub fn startup(
         })
         .with_children(|children| {
             // Camera
-            children.spawn(Camera3dBundle {
-                camera_3d: Camera3d {
-                    clear_color: ClearColorConfig::Custom(Color::BLACK),
+            children.spawn((
+                Camera3dBundle {
+                    camera_3d: Camera3d {
+                        clear_color: ClearColorConfig::Custom(Color::BLACK),
+                        ..Default::default()
+                    },
                     ..Default::default()
                 },
-                ..Default::default()
-            });
+                AtmosphereSettings::default(),
+            ));
 
             // OnGround-Detection
             children
