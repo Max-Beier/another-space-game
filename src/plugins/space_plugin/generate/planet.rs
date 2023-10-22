@@ -4,8 +4,7 @@ use bevy::prelude::{
 use rand::{rngs::StdRng, Rng};
 
 use crate::{
-    bundles::CBBundle,
-    components::{CBClass, CBInitialVelocity, CBName, CBRadius, CBSpin, CBSurfaceGravity},
+    components::{CBClass, CBOrbit, CelestialBody},
     resources::Space,
 };
 
@@ -18,19 +17,20 @@ pub fn generate_planet(
     materials: &mut ResMut<Assets<StandardMaterial>>,
     rng: &mut StdRng,
     position: Vec3,
-    center_mass: (Vec3, f32),
+    orbit: CBOrbit,
 ) {
-    let cb = CBBundle {
-        name: CBName("Planet".to_string()),
+    let cb = CelestialBody {
+        name: "Planet".to_string(),
         class: CBClass::Planet,
-        radius: CBRadius(rng.gen_range(space.planet_radius.clone())),
-        surface_gravity: CBSurfaceGravity(rng.gen_range(space.planet_surface_gravity.clone())),
-        initial_velocity: CBInitialVelocity::default(),
-        spin: CBSpin::default(),
+        radius: rng.gen_range(space.planet_radius.clone()),
+        surface_gravity: rng.gen_range(space.planet_surface_gravity.clone()),
+        spin_velocity: 0.0,
+        orbit: Some(orbit),
+        atmosphere: None,
     };
 
     let base_mesh = Mesh::try_from(shape::Icosphere {
-        radius: cb.radius.0,
+        radius: cb.radius,
         subdivisions: space.subdivisions.clone(),
     })
     .unwrap();
@@ -45,5 +45,5 @@ pub fn generate_planet(
         ..Default::default()
     };
 
-    generate_celestial_body(commands, cb, planet_mesh, position, Some(center_mass));
+    generate_celestial_body(commands, cb, planet_mesh, position);
 }

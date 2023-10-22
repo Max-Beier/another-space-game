@@ -7,7 +7,6 @@ use bevy::{
 use bevy_rapier3d::prelude::{NoUserData, RapierConfiguration, RapierPhysicsPlugin};
 use resources::{InputSettings, Space};
 
-mod bundles;
 mod components;
 mod plugins;
 mod resources;

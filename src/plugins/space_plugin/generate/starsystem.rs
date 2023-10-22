@@ -1,7 +1,7 @@
 use bevy::prelude::{Assets, Commands, Mesh, Res, ResMut, StandardMaterial, Vec3};
 use rand::{rngs::StdRng, Rng, SeedableRng};
 
-use crate::resources::Space;
+use crate::{components::CBOrbit, resources::Space};
 
 use super::{planet::generate_planet, star::generate_star};
 
@@ -14,7 +14,7 @@ pub fn generate_star_system(
     center_position: Vec3,
 ) {
     let mut rng: StdRng = StdRng::seed_from_u64(starsystem_seed as u64);
-    let center_mass = generate_star(
+    generate_star(
         &mut commands,
         &space.clone(),
         &mut meshes,
@@ -30,6 +30,12 @@ pub fn generate_star_system(
             rng.gen_range(space.planets_distance.clone()),
         );
 
+        let planet_orbit: CBOrbit = CBOrbit {
+            center_origin: center_position,
+            radius: (planet_position - center_position).length(),
+            velocity: rng.gen_range(space.planet_orbit_velocity.clone()),
+        };
+
         generate_planet(
             &mut commands,
             &space,
@@ -37,7 +43,7 @@ pub fn generate_star_system(
             &mut materials,
             &mut rng,
             planet_position,
-            (center_position, center_mass),
+            planet_orbit,
         );
     }
 }

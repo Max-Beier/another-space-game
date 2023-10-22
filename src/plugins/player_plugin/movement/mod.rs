@@ -59,12 +59,15 @@ pub fn update(
             player_transform.rotate_local_axis(Vec3::Y, player_yar);
         }
 
-        foot::active(
-            &input,
-            &time,
-            &mut player_transform,
-            &mut player_velocity,
-            &player_controller,
-        )
+        if player_controller.is_colliding {
+            player_velocity.linvel = Vec3::ZERO;
+            foot::active(
+                &input,
+                &time,
+                &mut player_transform,
+                &mut player_velocity,
+                &player_controller,
+            )
+        }
     };
 }

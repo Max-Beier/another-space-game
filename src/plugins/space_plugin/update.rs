@@ -1,66 +1,51 @@
 use bevy::{
-    prelude::{Quat, Query, Res, Transform, Vec3, Without},
+    prelude::{BuildChildren, Commands, Entity, Quat, Query, Res, Transform, Vec3, Without},
     time::Time,
 };
-use bevy_rapier3d::prelude::{Sleeping, Velocity};
+use bevy_rapier3d::prelude::Velocity;
 
-use crate::components::{CBRadius, CBSpin, CBSurfaceGravity, PlayerController};
+use crate::components::{CelestialBody, PlayerController};
+
+const G: f32 = 6.67430e-11;
 
 pub fn update(
+    mut commands: Commands,
     time: Res<Time>,
-    mut cbs_mut: Query<
-        (
-            &Transform,
-            &CBSurfaceGravity,
-            &CBRadius,
-            &CBSpin,
-            &Sleeping,
-            &mut Velocity,
-        ),
-        (Without<PlayerController>,),
-    >,
+    mut cbs_mut: Query<(Entity, &mut Transform, &CelestialBody), Without<PlayerController>>,
 
-    mut player: Query<(&mut Transform, &Sleeping, &mut Velocity, &PlayerController)>,
+    mut player: Query<(Entity, &mut Transform, &mut Velocity, &PlayerController)>,
 ) {
-    let mut forces = Vec::new();
-    let mut p = player.single_mut();
-
+    let (p_entity, mut p_transform, mut p_velocity, p_controller) = player.single_mut();
     let mut c_force = Vec3::ZERO;
-    for cb in cbs_mut.iter() {
-        let mass = cb.1 .0 * cb.2 .0 * cb.2 .0 / 6.674e-11;
-        for cb_current in cbs_mut.iter() {
-            if (cb.0.translation != cb_current.0.translation) && !cb_current.4.sleeping {
-                let sqr_dist = (cb.0.translation - cb_current.0.translation).length_squared();
-                let force_dir = (cb.0.translation - cb_current.0.translation).normalize_or_zero();
-                let force = (force_dir * 6.67430e-11f32 * mass) / sqr_dist;
-                forces.push(force);
-            }
+
+    for (cb_entity, mut cb_transform, cb) in cbs_mut.iter_mut() {
+        if let Some(orbit) = &cb.orbit {
+            cb_transform.rotate_around(
+                orbit.center_origin,
+                Quat::from_rotation_y(orbit.velocity * time.delta_seconds()),
+            );
         }
 
-        if !p.1.sleeping && !cb.4.sleeping {
-            let sqr_dist = (cb.0.translation - p.0.translation).length_squared();
-            let force_dir = (cb.0.translation - p.0.translation).normalize_or_zero();
-            let force = (force_dir * 6.67430e-11f32 * mass) / sqr_dist;
+        let cb_mass = cb.surface_gravity * cb.radius * cb.radius / G;
+        let sqr_dist = (cb_transform.translation - p_transform.translation).length_squared();
+        let force_dir = (cb_transform.translation - p_transform.translation).normalize_or_zero();
+        let force: Vec3 = (force_dir * G * cb_mass) / sqr_dist;
 
-            // Only one body can affect the player at a time
-            if force.length_squared() > c_force.length_squared() {
-                let gravity_up = -force_dir.normalize_or_zero();
-                let target_rotation = Quat::from_rotation_arc(p.0.up(), gravity_up) * p.0.rotation;
+        // Only one body can affect the player at a time
+        if force.length_squared() > c_force.length_squared() {
+            let gravity_up = -force_dir.normalize_or_zero();
+            let target_rotation =
+                Quat::from_rotation_arc(p_transform.local_y(), gravity_up) * p_transform.rotation;
 
-                if !p.3.is_colliding {
-                    p.2.linvel += force * time.delta_seconds();
-                }
-                p.0.rotation =
-                    Quat::slerp(p.0.rotation, target_rotation, time.delta_seconds() * 10.0);
-
-                c_force = force;
+            if p_controller.is_colliding {
+                commands.entity(cb_entity).add_child(p_entity);
+            } else {
+                commands.entity(p_entity).remove_parent();
+                p_velocity.linvel = force * time.delta_seconds();
             }
-        }
-    }
 
-    for mut cb in cbs_mut.iter_mut() {
-        if !cb.4.sleeping {
-            cb.5.linvel += forces.pop().unwrap() * time.delta_seconds();
+            p_transform.rotation = target_rotation;
+            c_force = force;
         }
     }
 }

@@ -5,40 +5,40 @@ use bevy::{
     window::Window,
 };
 use bevy_rapier3d::prelude::{
-    ActiveEvents, CoefficientCombineRule, Collider, ColliderMassProperties, Restitution, RigidBody,
-    Sensor, Sleeping, Velocity,
+    ActiveEvents, Collider, ColliderMassProperties, RigidBody, Sensor, Velocity,
 };
 
-use crate::components::{CBClass, CBRadius, PlayerController};
+use crate::components::{CBClass, CelestialBody, PlayerController};
 
 use super::utils::change_cursor;
 
 pub fn startup(
     mut commands: Commands,
     mut window_q: Query<&mut Window>,
-    cbs: Query<(&CBClass, &Transform, &CBRadius)>,
+    cbs: Query<(&CelestialBody, &Transform)>,
 ) {
     let mut window = window_q.single_mut();
     change_cursor(&mut window);
 
     let player_controller = PlayerController::default();
+    let player_height = player_controller.height;
+
     let player_spawn_positions: Vec<(Vec3, f32)> = cbs
         .iter()
-        .filter(|cb| matches!(cb.0, CBClass::Planet))
-        .map(|cb| (cb.1.translation, cb.2 .0))
+        .filter(|cb| matches!(cb.0.class, CBClass::Planet))
+        .map(|cb| (cb.1.translation, cb.0.radius))
         .collect();
+
     let player_spawn_postion =
-        player_spawn_positions[0].0 + Vec3::new(player_spawn_positions[0].1, 0.0, 0.0) * 1.01;
+        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 1.0001;
 
     commands
         .spawn(RigidBody::Dynamic)
-        .insert(Sleeping::disabled())
-        .insert(Collider::capsule_y(1.0, 0.5))
+        .insert(Collider::capsule_y(
+            player_height * 0.5,
+            player_height * 0.5,
+        ))
         .insert(ColliderMassProperties::Mass(player_controller.mass))
-        .insert(Restitution {
-            coefficient: 0.0,
-            combine_rule: CoefficientCombineRule::Min,
-        })
         .insert(Velocity::linear(Vec3::ZERO))
         .insert(player_controller)
         .insert(TransformBundle {
@@ -58,7 +58,9 @@ pub fn startup(
                 .insert(Sensor)
                 .insert(ActiveEvents::COLLISION_EVENTS)
                 .insert(TransformBundle::from_transform(Transform::from_xyz(
-                    0.0, -1.0, -1.0,
+                    0.0,
+                    -player_height,
+                    0.0,
                 )));
         });
 }

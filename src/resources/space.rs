@@ -15,6 +15,8 @@ pub struct Space {
     // Planet
     pub planet_radius: Range<f32>,
     pub planet_surface_gravity: Range<f32>,
+    // Planet Orbit
+    pub planet_orbit_velocity: Range<f32>,
 }
 
 impl Default for Space {
@@ -27,10 +29,12 @@ impl Default for Space {
             planets_distance: 50000.0..100000.0,
             // Star
             star_radius: 5000.0..10000.0,
-            star_surface_gravity: 50.0..80.0,
+            star_surface_gravity: 50.0..500.0,
             // Planet
             planet_radius: 100.0..4000.0,
-            planet_surface_gravity: 4.0..20.0,
+            planet_surface_gravity: 2.0..50.0,
+            // Planet Orbit
+            planet_orbit_velocity: 0.000001..0.00005,
         }
     }
 }
