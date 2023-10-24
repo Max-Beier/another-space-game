@@ -1,57 +1,59 @@
 use bevy::{
-    core_pipeline::core_3d,
-    prelude::{App, Plugin},
+    prelude::{App, AssetServer, Handle, IntoSystemConfigs, Plugin, Shader},
     render::{
         extract_component::{ExtractComponentPlugin, UniformComponentPlugin},
-        render_graph::{RenderGraphApp, ViewNodeRunner},
-        RenderApp,
+        render_resource::SpecializedRenderPipelines,
+        renderer::RenderDevice,
+        Render, RenderApp, RenderSet,
     },
 };
 
-mod post_process_node;
+mod pipeline;
+mod prepare;
+mod queue;
 
-pub use post_process_node::*;
+use crate::components::AtmosphereSettings;
 
-use crate::{
-    components::{AtmosphereSettings, View},
-    resources::PostProcessPipeline,
-};
+use self::pipeline::PostProcessPipeline;
 
 pub struct PostProcessPlugin;
 
 impl Plugin for PostProcessPlugin {
     fn build(&self, app: &mut bevy::prelude::App) {
         app.add_plugins((
-            ExtractComponentPlugin::<View>::default(),
-            UniformComponentPlugin::<View>::default(),
             ExtractComponentPlugin::<AtmosphereSettings>::default(),
             UniformComponentPlugin::<AtmosphereSettings>::default(),
         ));
 
-        let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
-            return;
+        let render_app = match app.get_sub_app_mut(RenderApp) {
+            Ok(render_app) => render_app,
+            Err(_) => return,
         };
 
         render_app
-            .add_render_graph_node::<ViewNodeRunner<PostProcessNode>>(
-                core_3d::graph::NAME,
-                PostProcessNode::NAME,
-            )
-            .add_render_graph_edges(
-                core_3d::graph::NAME,
-                &[
-                    core_3d::graph::node::TONEMAPPING,
-                    PostProcessNode::NAME,
-                    core_3d::graph::node::END_MAIN_PASS_POST_PROCESSING,
-                ],
+            .init_resource::<SpecializedRenderPipelines<PostProcessPipeline>>()
+            .add_systems(
+                Render,
+                (
+                    prepare::prepare.in_set(RenderSet::Prepare),
+                    queue::queue.in_set(RenderSet::Queue),
+                ),
             );
     }
 
     fn finish(&self, app: &mut App) {
-        let Ok(render_app) = app.get_sub_app_mut(RenderApp) else {
-            return;
+        let shader: Handle<Shader> = app
+            .world
+            .resource::<AssetServer>()
+            .load("shaders/post_process.wgsl");
+
+        let render_app = match app.get_sub_app_mut(RenderApp) {
+            Ok(render_app) => render_app,
+            Err(_) => return,
         };
 
-        render_app.init_resource::<PostProcessPipeline>();
+        let render_device = render_app.world.resource::<RenderDevice>().clone();
+
+        render_app.insert_resource(PostProcessPipeline::new(&render_device, shader));
     }
 }

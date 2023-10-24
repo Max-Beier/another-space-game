@@ -24,7 +24,7 @@ pub fn generate_planet(
     let atmosphere = AtmosphereSettings {
         origin: position,
         ground: radius,
-        thickness: 1000.0,
+        thickness: 100.0,
         light_dir: Vec3::ZERO,
     };
 

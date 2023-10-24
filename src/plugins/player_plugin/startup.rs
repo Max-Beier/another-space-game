@@ -11,7 +11,7 @@ use bevy_rapier3d::prelude::{
     ActiveEvents, Collider, ColliderMassProperties, RigidBody, Sensor, Velocity,
 };
 
-use crate::components::{CBClass, CelestialBody, PlayerController, View};
+use crate::components::{CBClass, CelestialBody, PlayerController};
 
 use super::utils::change_cursor;
 
@@ -51,15 +51,13 @@ pub fn startup(
         })
         .with_children(|children| {
             // Camera
-            children
-                .spawn((Camera3dBundle {
-                    camera_3d: Camera3d {
-                        clear_color: ClearColorConfig::Custom(Color::BLACK),
-                        ..Default::default()
-                    },
+            children.spawn((Camera3dBundle {
+                camera_3d: Camera3d {
+                    clear_color: ClearColorConfig::Custom(Color::BLACK),
                     ..Default::default()
-                },))
-                .insert(View::default());
+                },
+                ..Default::default()
+            },));
 
             // OnGround-Detection
             children
