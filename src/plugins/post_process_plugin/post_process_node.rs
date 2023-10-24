@@ -9,7 +9,7 @@ use bevy::{
             RenderPassColorAttachment, RenderPassDescriptor,
         },
         renderer::RenderContext,
-        view::ViewTarget,
+        view::{ViewTarget, ViewUniformOffset, ViewUniforms},
     },
 };
 
@@ -22,7 +22,7 @@ impl PostProcessNode {
 }
 
 impl ViewNode for PostProcessNode {
-    type ViewQuery = &'static ViewTarget;
+    type ViewQuery = (&'static ViewTarget, &'static ViewUniformOffset);
 
     fn run(
         &self,
@@ -44,7 +44,12 @@ impl ViewNode for PostProcessNode {
             return Ok(());
         };
 
-        let post_process = view_target.post_process_write();
+        let view_uniforms = world.resource::<ViewUniforms>();
+        let Some(view_uniforms_binding) = view_uniforms.uniforms.binding() else {
+            return Ok(());
+        };
+
+        let post_process = view_target.0.post_process_write();
 
         let bind_group = render_context
             .render_device()
@@ -64,6 +69,10 @@ impl ViewNode for PostProcessNode {
                         binding: 2,
                         resource: atmosphere_settings_binding.clone(),
                     },
+                    BindGroupEntry {
+                        binding: 3,
+                        resource: view_uniforms_binding.clone(),
+                    },
                 ],
             });
 
@@ -77,8 +86,9 @@ impl ViewNode for PostProcessNode {
             depth_stencil_attachment: None,
         });
 
+        let offset = view_target.1.offset;
         render_pass.set_render_pipeline(pipeline);
-        render_pass.set_bind_group(0, &bind_group, &[]);
+        render_pass.set_bind_group(0, &bind_group, &[offset]);
         render_pass.draw(0..3, 0..1);
 
         Ok(())

@@ -22,7 +22,7 @@ pub fn generate_star_system(
         &mut rng,
         center_position,
     );
-
+    /*
     for _ in space.planets_count.start.clone()..rng.gen_range(space.planets_count.clone()) {
         let planet_position = Vec3::new(
             rng.gen_range(space.planets_distance.clone()),
@@ -46,4 +46,5 @@ pub fn generate_star_system(
             planet_orbit,
         );
     }
+    */
 }

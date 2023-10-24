@@ -32,8 +32,9 @@ pub fn startup(
         .map(|cb| (cb.1.translation, cb.0.radius))
         .collect();
 
-    let player_spawn_postion =
-        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 2.0;
+    let dist: f32 = 100000.0;
+    let player_spawn_postion = Vec3::new(dist, dist, dist); //
+                                                            //player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 2.0;
 
     commands
         .spawn(RigidBody::Dynamic)

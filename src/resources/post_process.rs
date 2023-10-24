@@ -11,6 +11,7 @@ use bevy::{
         },
         renderer::RenderDevice,
         texture::BevyDefault,
+        view::ViewUniform,
     },
 };
 
@@ -54,6 +55,16 @@ impl FromWorld for PostProcessPipeline {
                         ty: bevy::render::render_resource::BufferBindingType::Uniform,
                         has_dynamic_offset: false,
                         min_binding_size: Some(AtmosphereSettings::min_size()),
+                    },
+                    count: None,
+                },
+                BindGroupLayoutEntry {
+                    binding: 3,
+                    visibility: ShaderStages::FRAGMENT,
+                    ty: BindingType::Buffer {
+                        ty: bevy::render::render_resource::BufferBindingType::Uniform,
+                        has_dynamic_offset: true,
+                        min_binding_size: Some(ViewUniform::min_size()),
                     },
                     count: None,
                 },
