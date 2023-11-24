@@ -39,12 +39,12 @@ pub fn update(
         change_cursor(&mut window);
     }
 
-    for _ in collision_events.iter() {
+    for _ in collision_events.read() {
         player_controller.is_colliding = !player_controller.is_colliding;
     }
 
     if window.cursor.grab_mode == CursorGrabMode::Locked {
-        for event in mouse_event.iter() {
+        for event in mouse_event.read() {
             // Camera Pitch (UP/DOWN)
             let mut camera_pitch = camera_transform.rotation.to_euler(EulerRot::XYZ).0;
             camera_pitch -= event.delta.y * input_settings.mouse_sensitivity * 0.001;

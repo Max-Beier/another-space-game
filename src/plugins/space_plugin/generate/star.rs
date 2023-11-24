@@ -5,7 +5,7 @@ use bevy::prelude::{
 use rand::{rngs::StdRng, Rng};
 
 use crate::{
-    components::{AtmosphereSettings, CBClass, CelestialBody},
+    components::{CBClass, CelestialBody},
     resources::Space,
 };
 
@@ -19,14 +19,15 @@ pub fn generate_star(
     rng: &mut StdRng,
     position: Vec3,
 ) {
+    let cb_radius = rng.gen_range(space.star_radius.clone());
     let cb = CelestialBody {
         name: "Star".to_string(),
         class: CBClass::Star,
-        radius: rng.gen_range(space.star_radius.clone()),
+        radius: cb_radius,
         surface_gravity: rng.gen_range(space.star_surface_gravity.clone()),
         spin_velocity: 0.0,
         orbit: None,
-        atmosphere: AtmosphereSettings::default(),
+        atmosphere: None,
     };
 
     let star_mesh: PbrBundle = PbrBundle {

@@ -1,9 +1,7 @@
 use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
-    prelude::{
-        BuildChildren, Camera3d, Camera3dBundle, Color, Commands, ComputedVisibility, Query,
-        Transform, Vec3,
-    },
+    prelude::{BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Query, Transform, Vec3},
+    render::view::Visibility,
     transform::TransformBundle,
     window::Window,
 };
@@ -44,7 +42,7 @@ pub fn startup(
         .insert(ColliderMassProperties::Mass(player_controller.mass))
         .insert(Velocity::linear(Vec3::ZERO))
         .insert(player_controller)
-        .insert(ComputedVisibility::default())
+        .insert(Visibility::default())
         .insert(TransformBundle {
             local: Transform::from_translation(player_spawn_postion),
             ..Default::default()

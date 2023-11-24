@@ -1,7 +1,4 @@
-use std::time::Duration;
-
 use bevy::{
-    asset::ChangeWatcher,
     prelude::{App, AssetPlugin, PluginGroup, PreStartup, ResMut, Vec3},
     window::{Window, WindowPlugin},
     DefaultPlugins,
@@ -31,13 +28,11 @@ fn main() {
                     ..Default::default()
                 })
                 .set(AssetPlugin {
-                    watch_for_changes: ChangeWatcher::with_delay(Duration::from_millis(200)),
                     ..Default::default()
                 }),
             RapierPhysicsPlugin::<NoUserData>::default(),
             plugins::PlayerPlugin,
             plugins::SpacePlugin,
-            plugins::PostProcessPlugin,
         ))
         .run();
 }

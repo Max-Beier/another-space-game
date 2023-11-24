@@ -41,7 +41,7 @@ pub struct CelestialBody {
     pub surface_gravity: f32,
     pub spin_velocity: f32,
     pub orbit: Option<CBOrbit>,
-    pub atmosphere: AtmosphereSettings,
+    pub atmosphere: Option<()>,
 }
 
 impl Default for CelestialBody {
