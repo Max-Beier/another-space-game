@@ -12,10 +12,12 @@ pub fn generate_celestial_body(
     mesh: PbrBundle,
     position: Vec3,
 ) {
+    let atmosphere = cb.atmosphere;
     commands
         .spawn(Collider::ball(cb.radius))
         .insert(cb)
         .insert(mesh)
+        .insert(atmosphere)
         .insert(TransformBundle {
             local: Transform::from_xyz(position.x, position.y, position.z),
             ..Default::default()

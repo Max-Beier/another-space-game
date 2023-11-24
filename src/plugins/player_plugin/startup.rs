@@ -31,7 +31,7 @@ pub fn startup(
         .collect();
 
     let player_spawn_postion =
-        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 2.0;
+        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 3.0;
 
     commands
         .spawn(RigidBody::Dynamic)

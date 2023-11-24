@@ -1,5 +1,7 @@
 use bevy::prelude::{Component, Vec3};
 
+use super::AtmosphereSettings;
+
 #[derive(Component, Clone, Copy)]
 pub enum CBClass {
     Planet,
@@ -39,7 +41,11 @@ pub struct CelestialBody {
     pub surface_gravity: f32,
     pub spin_velocity: f32,
     pub orbit: Option<CBOrbit>,
+<<<<<<< HEAD
     pub atmosphere: Option<()>,
+=======
+    pub atmosphere: AtmosphereSettings,
+>>>>>>> master
 }
 
 impl Default for CelestialBody {
@@ -51,7 +57,7 @@ impl Default for CelestialBody {
             surface_gravity: 9.81,
             spin_velocity: 464.0,
             orbit: None,
-            atmosphere: None,
+            atmosphere: AtmosphereSettings::default(),
         }
     }
 }
