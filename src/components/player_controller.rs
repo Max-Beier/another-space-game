@@ -15,7 +15,7 @@ impl Default for PlayerController {
         Self {
             name: "Player".to_string(),
             height: 2.0,
-            velocity: 1000.0,
+            velocity: 100000.0,
             jump: 1000.0,
             mass: 80.0,
             is_colliding: false,

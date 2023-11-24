@@ -58,8 +58,6 @@ pub fn update(
                 orbit.center_origin,
                 Quat::from_rotation_y(orbit.velocity * time.delta_seconds()),
             );
-
-            cb.atmosphere.center = cb_transform.translation;
         }
 
         // Update Forces
@@ -88,7 +86,6 @@ pub fn update(
         if matches!(cb.class, CBClass::Star) && sqr_dist < c_sqr_light_distance {
             let (mut l_transform, mut _light) = light_q.single_mut();
             let l_dir = (cb_transform.translation - l_transform.translation).normalize_or_zero();
-            cb.atmosphere.light_dir = l_dir;
 
             l_transform.rotation =
                 Quat::from_rotation_arc(l_transform.local_z(), l_dir) * l_transform.rotation;

@@ -1,9 +1,7 @@
 use bevy::{
     core_pipeline::clear_color::ClearColorConfig,
-    prelude::{
-        BuildChildren, Camera3d, Camera3dBundle, Color, Commands, ComputedVisibility, Query,
-        Transform, Vec3,
-    },
+    prelude::{BuildChildren, Camera3d, Camera3dBundle, Color, Commands, Query, Transform, Vec3},
+    render::view::Visibility,
     transform::TransformBundle,
     window::Window,
 };
@@ -11,7 +9,7 @@ use bevy_rapier3d::prelude::{
     ActiveEvents, Collider, ColliderMassProperties, RigidBody, Sensor, Velocity,
 };
 
-use crate::components::{AtmosphereSettings, CBClass, CelestialBody, PlayerController};
+use crate::components::{CBClass, CelestialBody, PlayerController};
 
 use super::utils::change_cursor;
 
@@ -32,9 +30,8 @@ pub fn startup(
         .map(|cb| (cb.1.translation, cb.0.radius))
         .collect();
 
-    let dist: f32 = 100000.0;
-    let player_spawn_postion = Vec3::new(dist, dist, dist); //
-                                                            //player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 2.0;
+    let player_spawn_postion =
+        player_spawn_positions[0].0 + Vec3::new(0.0, 0.0, player_spawn_positions[0].1) * 2.0;
 
     commands
         .spawn(RigidBody::Dynamic)
@@ -45,23 +42,20 @@ pub fn startup(
         .insert(ColliderMassProperties::Mass(player_controller.mass))
         .insert(Velocity::linear(Vec3::ZERO))
         .insert(player_controller)
-        .insert(ComputedVisibility::default())
+        .insert(Visibility::default())
         .insert(TransformBundle {
             local: Transform::from_translation(player_spawn_postion),
             ..Default::default()
         })
         .with_children(|children| {
             // Camera
-            children.spawn((
-                Camera3dBundle {
-                    camera_3d: Camera3d {
-                        clear_color: ClearColorConfig::Custom(Color::BLACK),
-                        ..Default::default()
-                    },
+            children.spawn((Camera3dBundle {
+                camera_3d: Camera3d {
+                    clear_color: ClearColorConfig::Custom(Color::BLACK),
                     ..Default::default()
                 },
-                AtmosphereSettings::default(),
-            ));
+                ..Default::default()
+            },));
 
             // OnGround-Detection
             children
