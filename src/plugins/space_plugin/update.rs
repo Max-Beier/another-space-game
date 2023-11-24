@@ -7,7 +7,7 @@ use bevy::{
 };
 use bevy_rapier3d::prelude::{Collider, Velocity};
 
-use crate::components::{AtmosphereSettings, CBClass, CelestialBody, PlayerController};
+use crate::components::{CBClass, CelestialBody, PlayerController};
 
 const G: f32 = 6.67430e-11;
 
@@ -36,19 +36,7 @@ pub fn foating_point_origin(
 pub fn update(
     mut commands: Commands,
     time: Res<Time>,
-<<<<<<< HEAD
     mut cbs_q: Query<(Entity, &mut Transform, &mut CelestialBody), Without<PlayerController>>,
-=======
-    mut cbs_q: Query<
-        (
-            Entity,
-            &mut Transform,
-            &CelestialBody,
-            &mut AtmosphereSettings,
-        ),
-        Without<PlayerController>,
-    >,
->>>>>>> master
     mut player_q: Query<(Entity, &mut Transform, &mut Velocity, &PlayerController)>,
     mut light_q: Query<
         (&mut Transform, &mut DirectionalLight),
@@ -63,18 +51,13 @@ pub fn update(
     let mut c_force = Vec3::ZERO;
     let mut c_sqr_light_distance = f32::MAX;
 
-<<<<<<< HEAD
     for (cb_entity, mut cb_transform, mut cb) in cbs_q.iter_mut() {
-=======
-    for (cb_entity, mut cb_transform, cb, mut cb_atmosphere) in cbs_q.iter_mut() {
->>>>>>> master
         // Update Orbits
         if let Some(orbit) = &cb.orbit {
             cb_transform.rotate_around(
                 orbit.center_origin,
                 Quat::from_rotation_y(orbit.velocity * time.delta_seconds()),
             );
-            cb_atmosphere.origin = cb_transform.translation;
         }
 
         // Update Forces
@@ -104,7 +87,6 @@ pub fn update(
             let (mut l_transform, mut _light) = light_q.single_mut();
             let l_dir = (cb_transform.translation - l_transform.translation).normalize_or_zero();
 
-            cb_atmosphere.light_dir = l_dir;
             l_transform.rotation =
                 Quat::from_rotation_arc(l_transform.local_z(), l_dir) * l_transform.rotation;
 
